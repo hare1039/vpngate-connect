@@ -23,17 +23,22 @@
 
 namespace
 {
-    std::atomic<int> user_signal;
-    std::vector<std::function<void(void)>> on_exit;
-    void signal_handler(int signal)
+
+    auto on_exit() -> std::vector<std::function<void(void)>>&
     {
-        user_signal.store(signal);
-        for (auto &&f : on_exit)
-            std::invoke(f);
+        static std::vector<std::function<void(void)>> on_exit;
+        return on_exit;
     }
 
     template <typename F>
-    void add_exit_func(F f) {on_exit.emplace_back(f);}
+    void add_exit_func(F f) {on_exit().emplace_back(f);}
+
+    void signal_handler(int)
+    {
+        for (auto &&f : on_exit())
+            std::invoke(f);
+    }
+
 }
 
 struct vpn
@@ -173,7 +178,6 @@ int main(int argc, char* argv[])
         {
             namespace bp = boost::process;
             bp::child c(bp::search_path("openvpn"), configfile, bp::std_out > stdout);
-            add_exit_func([&c] { c.terminate(); });
             c.wait();
         }
     }
