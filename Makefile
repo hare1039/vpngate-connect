@@ -10,9 +10,11 @@ release: release-mac release-linux-x86_64 release-linux-arm release-win-x86_64
 	echo "build all"
 
 release-mac: vpngate-connect
-
-vpngate-connect: vpngate-connect.cpp
-	$(CXX) -O3 -o $@ -std=c++17 $< -lboost_program_options -lboost_filesystem
+	mkdir -p build-mac && \
+    cd build-mac       && \
+    conan install .. --profile ../profiles/release-mac --build missing && \
+    cmake .. -GNinja -DCMAKE_BUILD_TYPE=Release && \
+    cmake --build .
 
 release-linux-x86_64:
 	mkdir -p build-linux-x86_64 && \
