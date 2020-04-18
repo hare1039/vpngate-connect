@@ -3601,11 +3601,11 @@ namespace csv {
             }
 
             /** Size of a memory page in bytes */
-            const int PAGE_SIZE = getpagesize();
+            const int const_page_size = getpagesize();
         #elif defined(__linux__)
-            const int PAGE_SIZE = getpagesize();
+            const int const_page_size = getpagesize();
         #else
-            const int PAGE_SIZE = 4096;
+            const int const_page_size = 4096;
         #endif
 
         /** For functions that lazy load a large CSV, this determines how
@@ -4893,7 +4893,7 @@ namespace csv {
         std::thread worker(&CSVReader::read_csv_worker, this);
 
         for (size_t processed = 0; processed < bytes; ) {
-            char * HEDLEY_RESTRICT result = std::fgets(line_buffer, internals::PAGE_SIZE, this->infile);
+            char * HEDLEY_RESTRICT result = std::fgets(line_buffer, internals::const_page_size, this->infile);
             if (result == NULL) break;
             line_buffer += std::strlen(line_buffer);
             size_t current_strlen = line_buffer - buffer.get();
