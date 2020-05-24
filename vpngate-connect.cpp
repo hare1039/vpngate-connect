@@ -52,7 +52,7 @@ struct vpn
     std::string config;
 };
 
-std::ostream& operator<<(std::ostream& os, vpn const& v)
+auto operator<<(std::ostream& os, vpn const& v) -> std::ostream&
 {
     return os << "IP:      " << v.ip << "\n"
               << "Score:   " << v.score << "\n"
@@ -92,12 +92,15 @@ auto get(std::string host, std::string port, std::string target)
     return res;
 }
 
-std::string decode64(const std::string &val) {
+auto decode64(const std::string &val) -> std::string
+{
     using namespace boost::archive::iterators;
     using It = transform_width<binary_from_base64<std::string::const_iterator>, 8, 6>;
-    return boost::algorithm::trim_right_copy_if(std::string(It(std::begin(val)), It(std::end(val))), [](char c) {
-        return c == '\0';
-    });
+    return boost::algorithm::trim_right_copy_if(
+        std::string(It(std::begin(val)), It(std::end(val))),
+        [](char c) {
+            return c == '\0';
+        });
 }
 
 
@@ -151,7 +154,8 @@ int main(int argc, char* argv[])
         if (vm.count("list"))
         {
             std::vector<std::string> list;
-            std::transform(configs.begin(), configs.end(), std::back_inserter(list),
+            std::transform(configs.begin(), configs.end(),
+                           std::back_inserter(list),
                            [](vpn const & a){ return a.country; });
             std::sort(list.begin(), list.end());
             auto end = std::unique(list.begin(), list.end());
