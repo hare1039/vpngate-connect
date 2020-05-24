@@ -4,7 +4,7 @@ LINUX_HEADER_arm=-I/Volumes/transcend/programs/linux-header/arm/include
 LINUX_HEADER_i386=-I/Volumes/transcend/programs/linux-header/i386/include
 VERBOSE=-DCMAKE_VERBOSE_MAKEFILE=ON
 
-.PHONY: release release-mac release-linux-x86_64 release-linux-arm release-win-x86_64
+.PHONY: release release-mac release-linux-x86_64 release-linux-arm release-win-x86_64 direct
 
 release: release-mac release-linux-x86_64 release-linux-arm release-win-x86_64
 	echo "build all"
@@ -52,6 +52,9 @@ release-win-x86_64:
              -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ \
              -DCMAKE_CXX_FLAGS="${RELEASE_FLAGS} -DBOOST_USE_WINDOWS_H -DWIN32_LEAN_AND_MEAN" && \
     cmake --build .
+
+raw-build: vpngate-connect.cpp
+	c++ -o vpngate-connect -std=c++17 $< -lboost_program_options -lboost_filesystem -lboost_system
 
 clean:
 	rm -rf build-* vpngate-connect
